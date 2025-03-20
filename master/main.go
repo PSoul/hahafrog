@@ -18,13 +18,14 @@ import (
 )
 
 var (
-	redisAddr   string
-	listenAddr  string
-	targetFile  string
-	redisClient *redis.Client
-	ctx         = context.Background()
-	workersMu   sync.Mutex
-	workers     = make(map[string]*Worker)
+	redisAddr     string
+	listenAddr    string
+	targetFile    string
+	redisClient   *redis.Client
+	ctx           = context.Background()
+	workersMu     sync.Mutex
+	workers       = make(map[string]*Worker)
+	redisPassword string
 )
 
 type Worker struct {
@@ -41,16 +42,25 @@ type Task struct {
 }
 
 func init() {
-	flag.StringVar(&redisAddr, "redis", "localhost:6379", "Redis server address")
-	flag.StringVar(&listenAddr, "listen", ":8080", "Address to listen on")
-	flag.StringVar(&targetFile, "targets", "web.txt", "File containing target URLs")
+	// Redis相关参数
+	flag.StringVar(&redisAddr, "redis", "localhost:6379", "Redis服务器地址")
+	flag.StringVar(&redisPassword, "redis-pass", "", "Redis认证密码")
+
+	// 服务监听参数
+	flag.StringVar(&listenAddr, "listen", ":8080", "服务监听地址")
+
+	// 目标文件参数
+	flag.StringVar(&targetFile, "targets", "web.txt", "包含目标URL的文件路径")
+
 	flag.Parse()
 
+	// 初始化Redis客户端
 	redisClient = redis.NewClient(&redis.Options{
-		Addr: redisAddr,
+		Addr:     redisAddr,
+		Password: redisPassword, // 新增密码参数
 	})
 
-	// 确保Redis连接正常工作
+	// 验证Redis连接
 	if err := redisClient.Ping(ctx).Err(); err != nil {
 		log.Fatalf("无法连接到Redis: %v", err)
 	}

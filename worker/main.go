@@ -37,7 +37,7 @@ type Task struct {
 }
 
 func init() {
-	flag.StringVar(&masterURL, "master", "http://159.138.49.13:8080", "Master服务器的URL")
+	flag.StringVar(&masterURL, "master", "", "Master服务器的URL (必填)")
 	defaultID, _ := uuid.NewRandom()
 	flag.StringVar(&workerID, "id", defaultID.String(), "此worker的唯一ID")
 	flag.DurationVar(&heartbeatInterval, "heartbeat", 30*time.Second, "心跳间隔")
@@ -45,6 +45,10 @@ func init() {
 }
 
 func main() {
+	if masterURL == "" {
+		log.Fatal("必须通过 -master 参数指定 Master 服务器地址")
+	}
+
 	log.Printf("Worker %s 启动，连接到master：%s", workerID, masterURL)
 
 	// 注册worker
