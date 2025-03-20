@@ -54,15 +54,15 @@ redis-server
 2. 启动Master服务器，如果不需要自己编译忽略第二步，直接下载编译后文件
 ```bash
 cd master
-go build -o master_server
-./master_server --redis localhost:6379 --redis-pass mypassword --listen :8080 --targets web.txt
+go build -o hahafrog_master
+./hahafrog_master --redis localhost:6379 --redis-pass mypassword --listen :8080 --targets web.txt
 ```
 
 3. 启动Worker节点，可在多台服务器上执行，目前Windows有BUG，建议只在Linux上运行，如果不需要自己编译忽略第二步，直接下载编译后文件
 ```bash
 cd worker
-go build -o afrog_worker
-./afrog_worker --master http://master-ip:8080 --id worker1
+go build -o hahafrog_worker
+./hahafrog_worker --master http://master-ip:8080 --id worker1
 ```
 
 启动worker节点后即可正常开始扫描。以下是一些API信息
